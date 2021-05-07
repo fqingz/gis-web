@@ -1,0 +1,222 @@
+<template>
+  <a-card :bordered="false">
+    <!-- 查询区域 -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+        <a-row :gutter="24">
+          <a-col :md="8" :sm="12">
+            <a-form-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-range-picker
+                style="width: 420px"
+                v-model="queryParam.createTimeRange"
+                format="YYYY-MM-DD HH:mm:ss"
+                :placeholder="['开始时间', '结束时间']"
+                @change="onDateChange"
+                @ok="onDateOk"
+              />
+            </a-form-item>
+          </a-col>
+
+          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+            <a-col :md="6" :sm="24" >
+                <a-button type="primary"  style="left: 10px" @click="searchQuery" icon="search">查询</a-button>
+            </a-col>
+          </span>
+
+        </a-row>
+      </a-form>
+    </div>
+    <!-- 查询区域-END -->
+
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>
+    </div>
+
+    <!-- table区域-begin -->
+    <div>
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
+
+      <a-table
+        ref="table"
+        size="middle"
+        :scroll="{x:true}"
+        bordered
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        class="j-table-force-nowrap"
+        @change="handleTableChange">
+
+        <template slot="htmlSlot" slot-scope="text">
+          <div v-html="text"></div>
+        </template>
+        <template slot="imgSlot" slot-scope="text">
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+        </template>
+        <template slot="fileSlot" slot-scope="text">
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button
+            v-else
+            :ghost="true"
+            type="primary"
+            icon="download"
+            size="small"
+            @click="downloadFile(text)">
+            下载
+          </a-button>
+        </template>
+
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
+          <a-divider type="vertical" />
+          <a @click="handleDetail(record)">详情</a>
+          <a-divider type="vertical" />
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
+
+      </a-table>
+    </div>
+
+    <gis-image-modal ref="modalForm" @ok="modalFormOk"></gis-image-modal>
+  </a-card>
+</template>
+
+<script>
+
+  import '@/assets/less/TableExpand.less'
+  import { mixinDevice } from '@/utils/mixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import GisImageModal from './modules/GisImageModal'
+  import { filterObj } from '../../utils/util'
+
+  export default {
+    name: 'GisImageList',
+    mixins:[JeecgListMixin, mixinDevice],
+    components: {
+      GisImageModal
+    },
+    data () {
+      return {
+        description: '图片管理管理页面',
+        // 查询条件
+        queryParam: {
+          createTimeRange: [],
+        },
+        labelCol: {
+          xs: { span: 1 },
+          sm: { span: 2 },
+        },
+        wrapperCol: {
+          xs: { span: 10 },
+          sm: { span: 16 },
+        },
+        // 表头
+        columns: [
+          {
+            title: '#',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
+            title:'图片',
+            align:"center",
+            dataIndex: 'image',
+            scopedSlots: {customRender: 'imgSlot'}
+          },
+          {
+            title: '上传时间',
+            dataIndex: 'createTime',
+            align:"center",
+            width: 210,
+            sorter: true
+          },
+          {
+            title:'备注',
+            align:"center",
+            dataIndex: 'remark'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            fixed:"right",
+            width:147,
+            scopedSlots: { customRender: 'action' }
+          }
+        ],
+        url: {
+          list: "/gis/gisImage/list",
+          delete: "/gis/gisImage/delete",
+          deleteBatch: "/gis/gisImage/deleteBatch",
+          exportXlsUrl: "/gis/gisImage/exportXls",
+          importExcelUrl: "gis/gisImage/importExcel",
+
+        },
+        dictOptions:{},
+        superFieldList:[],
+      }
+    },
+    created() {
+    this.getSuperFieldList();
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+    },
+    methods: {
+      getQueryParams(){
+        var param = Object.assign({}, this.queryParam,this.isorter);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.createTimeRange; // 时间参数不传递后台
+        if (this.superQueryParams) {
+          param['superQueryParams'] = encodeURI(this.superQueryParams)
+          param['superQueryMatchType'] = this.superQueryMatchType
+        }
+        return filterObj(param);
+      },
+      initDictConfig(){
+      },
+      getSuperFieldList(){
+        let fieldList=[];
+        fieldList.push({type:'string',value:'image',text:'图片',dictCode:''})
+        fieldList.push({type:'string',value:'remark',text:'备注',dictCode:''})
+        this.superFieldList = fieldList
+      },
+      onDateChange: function (value, dateString) {
+        console.log(dateString[0],dateString[1]);
+        this.queryParam.createTime_begin=dateString[0];
+        this.queryParam.createTime_end=dateString[1];
+      },
+      onDateOk(value) {
+        console.log(value);
+      },
+    }
+  }
+</script>
+<style scoped>
+  @import '~@assets/less/common.less';
+</style>
