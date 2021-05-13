@@ -2,28 +2,22 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-          <a-col :md="8" :sm="12">
-            <a-form-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-range-picker
-                style="width: 420px"
-                v-model="queryParam.createTimeRange"
-                format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="['开始时间', '结束时间']"
-                @change="onDateChange"
-                @ok="onDateOk"
-              />
-            </a-form-item>
-          </a-col>
-
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="6" :sm="24" >
-                <a-button type="primary"  style="left: 10px" @click="searchQuery" icon="search">查询</a-button>
-            </a-col>
-          </span>
-
-        </a-row>
+      <a-form layout="inline" @keyup.enter.native="searchQuery" style="height: 56px">
+        <div style="float:left;">
+          <a-form-item label="上传时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-range-picker
+              style="width: 100%"
+              v-model="queryParam.createTimeRange"
+              format="YYYY-MM-DD HH:mm:ss"
+              :placeholder="['开始时间', '结束时间']"
+              @change="onDateChange"
+              @ok="onDateOk"
+            />
+          </a-form-item>
+        </div>
+        <div style="float:left;">
+          <a-button type="primary"  style="left: 10px" @click="searchQuery" icon="search">查询</a-button>
+        </div>
       </a-form>
     </div>
     <!-- 查询区域-END -->

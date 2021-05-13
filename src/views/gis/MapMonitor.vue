@@ -80,10 +80,16 @@ export default {
           let markerInfo = {
             lng: 113.7218889778837,
             lat: 29.71460700583699,
+            city: '赤壁市',
             address: '湖北省咸宁市压金山',
             type: '森林砍伐',
             level: '一般',
-            time: '2021-04-30 10:05:20'
+            time: '2021-04-30 10:05:20',
+            // path1: 'temp/2_1620832405075.png',
+            path1: 'temp/1_1620832397420.jpg',
+            path2: 'temp/1_1620832397420.jpg',
+            date1: '2021-04-10 11:00:44',
+            date2: '2021-05-10 11:00:44',
           }
 
           // 创建点标记
@@ -161,10 +167,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .map {
-    width: 100%;
-  }
-
   .map {
     width: 100%;
     height: 400px;
