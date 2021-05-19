@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 生态监测系统</span>
+      <span v-if="device === 'desktop'">欢迎进入 检察机关公益诉讼线索发现系统</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>

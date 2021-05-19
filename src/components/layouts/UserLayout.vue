@@ -3,9 +3,9 @@
     <div class="container">
       <div class="top">
         <div class="header">
-          <a href="/" v-if="false">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">Jeecg Boot</span>
+          <a href="/">
+            <img src="~@/assets/logo.svg" class="logo" alt="logo" v-if="false">
+            <span class="title">检察机关公益诉讼线索发现系统</span>
           </a>
         </div>
         <div class="desc"  v-if="false">
@@ -16,7 +16,7 @@
       <route-view></route-view>
 
       <div class="footer">
-        <div class="links">
+        <div class="links" v-if="false">
           <a href="http://doc.jeecg.com" target="_blank">帮助</a>
           <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">隐私</a>
           <a href="https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE" target="_blank">条款</a>

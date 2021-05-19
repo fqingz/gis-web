@@ -25,9 +25,13 @@ import JsPDF from "jspdf"
 
       <div style="height: 80px;">
         <div style="float: right; min-width:300px;">
-          <div><span class="label">制作时间：</span>{{createDate}}</div>
-          <div><span class="label">制作地点：</span>{{createAddr}}</div>
-          <div><span class="label">制作人：</span>{{createUser}}</div>
+          <div><span class="label">制作时间：</span>
+            <a-input class="input" border="false" v-model="createDate"></a-input>
+          </div>
+          <div><span class="label">制作地点：</span>
+            <a-input class="input" v-model="createAddr"></a-input></div>
+          <div><span class="label">制作人：</span>
+            <a-input class="input" v-model="createUser"></a-input></div>
         </div>
       </div>
     </div>
@@ -41,6 +45,7 @@ import JsPDF from "jspdf"
 import { getFileAccessHttpUrl } from '../../api/manage'
 import html2Canvas from 'html2canvas'
 import JsPDF from 'jspdf'
+import moment from 'moment'
 
 export default {
   name: 'MapReport',
@@ -54,18 +59,21 @@ export default {
       },
       leftImgUrl: '',
       rightImgUrl: '',
-      createDate: '2021-05-10 10:30:00',
-      createAddr: '湖北省咸宁市压金山',
-      createUser: '张三',
+      createDate: '',
+      createAddr: '',
+      createUser: '',
       reportTitle: '人民检察院公益诉讼案件线索报告',
       htmlTitle: ''
     }
   },
   methods: {
     showModal(markerInfo) {
-      this.markerInfo = markerInfo
+      this.markerInfo = markerInfo;
+      console.log(markerInfo.path1);
+      console.log(markerInfo.path2);
       this.leftImgUrl = getFileAccessHttpUrl(markerInfo.path1)
       this.rightImgUrl = getFileAccessHttpUrl(markerInfo.path2)
+      this.createDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
       this.visible = true
     },
     handleOk() {
@@ -117,6 +125,16 @@ export default {
 
     .center {
       text-align: center;
+    }
+
+    .input {
+      width: 200px;
+      border-top-width: 0;
+      border-right-width: 0;
+      border-left-width: 0;
+      height: 20px;
+      line-height: 1.5;
+      padding: 0 5px;
     }
   }
 </style>

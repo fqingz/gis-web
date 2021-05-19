@@ -9,6 +9,7 @@
 
 import { BMPGL } from './bmpgl'
 import MapReport from './MapReport'
+import { getAction } from '../../api/manage'
 
 export default {
   name: 'MapMonitor',
@@ -19,7 +20,10 @@ export default {
       ak: 'MHGAkE6LDRRKvT74Xt4wIA6TxgmDePHX',
       center: '咸宁市',
 
-      currentMarkerInfo: {}
+      currentMarkerInfo: {},
+      url: {
+        query: "/gis/gisImage/queryImg",
+      }
     }
   },
   created() {
@@ -78,48 +82,63 @@ export default {
           })
 
           let markerInfo = {
-            lng: 113.7218889778837,
-            lat: 29.71460700583699,
+            lng: 113.72,
+            lat: 29.71,
             city: '赤壁市',
             address: '湖北省咸宁市压金山',
             type: '森林砍伐',
             level: '一般',
             time: '2021-04-30 10:05:20',
-            // path1: 'temp/2_1620832405075.png',
-            path1: 'temp/1_1620832397420.jpg',
-            path2: 'temp/1_1620832397420.jpg',
-            date1: '2021-04-10 11:00:44',
-            date2: '2021-05-10 11:00:44',
+            // path1: 'temp/1_1620832397420.jpg',
+            // path2: 'temp/1_1620832397420.jpg',
+            // date1: '2021-04-10 11:00:44',
+            // date2: '2021-05-10 11:00:44',
           }
 
-          // 创建点标记
-          let point = new BMapGL.Point(markerInfo.lng, markerInfo.lat)
-          let marker = new BMapGL.Marker(point)
-          // 在地图上添加点标记
-          map.addOverlay(marker)
-
-          let markerInfoStr = JSON.stringify(markerInfo)
-          console.log('markerInfoStr', markerInfoStr)
-
-          let content = `<ul style="margin-left:-20px;line-height:14px;font-size:12px;">
-             <li>破坏类型：${markerInfo.type}</li>
-             <li>破坏程度：${markerInfo.level}</li>
-             <li>监测时间：${markerInfo.time}</li>
-             <a class="markerBtn" markerInfo='${markerInfoStr}'>导出报告</a>
-          </ul>`
-          let infoWindow = new BMapGL.InfoWindow(content, { title: markerInfo.address })  // 创建信息窗口对象
-
           let _this = this
-          marker.addEventListener('click', function() {
-            map.openInfoWindow(infoWindow, point) //开启信息窗口
 
-            let infoWindows = document.getElementsByClassName('markerBtn')
-            for (let infoWindow of infoWindows) {
-              infoWindow.onclick = function() {
-                _this.handlerDetail(JSON.parse(infoWindow.getAttribute('markerInfo')), _this)
+          getAction(this.url.query, {}).then((res) => {
+            if (res.success && res.result) {
+              if(res.result.length === 2){
+                markerInfo.path1 = res.result[0].image;
+                markerInfo.path2 = res.result[1].image;
+                markerInfo.date1 = res.result[0].createTime;
+                markerInfo.date2 = res.result[1].createTime;
+
+                // 创建点标记
+                let point = new BMapGL.Point(markerInfo.lng, markerInfo.lat)
+                let marker = new BMapGL.Marker(point)
+                // 在地图上添加点标记
+                map.addOverlay(marker)
+
+                let markerInfoStr = JSON.stringify(markerInfo)
+                console.log('markerInfoStr', markerInfoStr)
+
+                let content = `<ul style="margin-left:-20px;line-height:14px;font-size:12px;">
+                   <li>破坏类型：${markerInfo.type}</li>
+                   <li>破坏程度：${markerInfo.level}</li>
+                   <li>监测时间：${markerInfo.time}</li>
+                   <a class="markerBtn" markerInfo='${markerInfoStr}'>导出报告</a>
+                </ul>`
+                let infoWindow = new BMapGL.InfoWindow(content, { title: markerInfo.address })  // 创建信息窗口对象
+
+
+                marker.addEventListener('click', function() {
+                  map.openInfoWindow(infoWindow, point) //开启信息窗口
+
+                  let infoWindows = document.getElementsByClassName('markerBtn')
+                  for (let infoWindow of infoWindows) {
+                    infoWindow.onclick = function() {
+                      _this.handlerDetail(JSON.parse(infoWindow.getAttribute('markerInfo')), _this)
+                    }
+                  }
+                })
+
               }
             }
           })
+
+
         })
     },
 
