@@ -117,7 +117,8 @@ export default {
                    <li>监测时间：${markerInfo.time}</li>
                    <a class="markerBtn" markerInfo='${markerInfoStr}'>导出报告</a>
                 </ul>`
-                let infoWindow = new BMapGL.InfoWindow(content, { title: markerInfo.address })  // 创建信息窗口对象
+                let title = '北纬' + markerInfo.lat + '东经' + markerInfo.lng;
+                let infoWindow = new BMapGL.InfoWindow(content, { title: title })  // 创建信息窗口对象
 
 
                 marker.addEventListener('click', function() {
