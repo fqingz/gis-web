@@ -85,9 +85,7 @@ export default {
             lng: 113.72,
             lat: 29.71,
             city: '赤壁市',
-            address: '湖北省咸宁市压金山',
             type: '森林砍伐',
-            level: '一般',
             time: '2021-04-30 10:05:20',
             // path1: 'temp/1_1620832397420.jpg',
             // path2: 'temp/1_1620832397420.jpg',
@@ -116,7 +114,6 @@ export default {
 
                 let content = `<ul style="margin-left:-20px;line-height:14px;font-size:12px;">
                    <li>破坏类型：${markerInfo.type}</li>
-                   <li>破坏程度：${markerInfo.level}</li>
                    <li>监测时间：${markerInfo.time}</li>
                    <a class="markerBtn" markerInfo='${markerInfoStr}'>导出报告</a>
                 </ul>`

@@ -6,7 +6,6 @@ import JsPDF from "jspdf"
     <div id="pdfDom">
       <h2 style="text-align: center;">{{markerInfo.city}}{{reportTitle}}</h2>
 
-      <div><span class="label">地点：</span>{{markerInfo.address}}</div>
       <div><span class="label">经纬度：</span>北纬{{markerInfo.lat}} 东经{{markerInfo.lng}}</div>
       <div><span class="label">告警类型：</span>{{markerInfo.type}}</div>
       <div><span class="label">实景地图：</span></div>
